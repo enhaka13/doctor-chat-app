@@ -7,7 +7,7 @@ type Repository interface {
 	FindByID(ID int) (Doctor, error)
 	FindByEmail(email string) (Doctor, error)
 	FindByName(name string) (Doctor, error)
-	FindByAddress(address string) (Doctor, error)
+	FindByCity(city string) (Doctor, error)
 	FindBySpeciality(speciality string) (Doctor, error)
 	Update(doctor Doctor) (Doctor, error)
 	Delete(ID int) error
@@ -59,10 +59,10 @@ func (r *repository) FindByName(name string) (Doctor, error) {
 	return doctor, nil
 }
 
-func (r *repository) FindByAddress(address string) (Doctor, error) {
+func (r *repository) FindByCity(city string) (Doctor, error) {
 	var doctor Doctor
 
-	if err := r.db.Where("address = ?", address).Find(&doctor).Error; err != nil {
+	if err := r.db.Where("city = ?", city).Find(&doctor).Error; err != nil {
 		return Doctor{}, err
 	}
 
