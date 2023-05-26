@@ -2,10 +2,10 @@ package doctor
 
 type RegisterDoctorInput struct {
 	Name        string `json:"name" binding:"required"`
-	Gender      int    `json:"gender" binding:"required"`
+	Gender      int    `json:"gender"`
 	Email       string `json:"email" binding:"required,email"`
-	PhoneNumber int    `json:"phone_number" binding:"required"`
-	Address     string `json:"adress" binding:"required"`
+	PhoneNumber string `json:"phone_number" binding:"required"`
+	Address     string `json:"address" binding:"required"`
 	City        string `json:"city" binding:"required"`
 	Speciality  string `json:"speciality" binding:"required"`
 	Password    string `json:"password" binding:"required"`
@@ -26,7 +26,7 @@ type CheckNameDoctorInput struct {
 
 type UpdateDoctorInput struct {
 	Email       string `json:"email" binding:"email"`
-	PhoneNumber int    `json:"phone_number"`
+	PhoneNumber string `json:"phone_number"`
 	Address     string `json:"adress"`
 	City        string `json:"city"`
 	Speciality  string `json:"speciality"`

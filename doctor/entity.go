@@ -9,7 +9,7 @@ type Doctor struct {
 	Name           string    `json:"name"`
 	Gender         int       `json:"gender"`
 	Email          string    `json:"email"`
-	PhoneNumber    int       `json:"phone_number"`
+	PhoneNumber    string    `json:"phone_number"`
 	Address        string    `json:"adress"`
 	City           string    `json:"city"`
 	Speciality     string    `json:"speciality"`

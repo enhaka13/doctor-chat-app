@@ -11,11 +11,12 @@ type Service interface {
 	Login(input LoginDoctorInput) (Doctor, error)
 	IsEmailAvailable(input CheckEmailDoctorInput) (bool, error)
 	SaveAvatar(ID int, fileLocation string) (Doctor, error)
+	GetAllDoctors() ([]Doctor, error)
 	GetDoctorByID(ID int) (Doctor, error)
 	GetDoctorByName(name string) (Doctor, error)
-	GetDoctorByCity(city string) (Doctor, error)
-	GetDoctorBySpeciality(speciality string) (Doctor, error)
-	UpdateDoctor(input RegisterDoctorInput) (Doctor, error)
+	GetDoctorByCity(city string) ([]Doctor, error)
+	GetDoctorBySpeciality(speciality string) ([]Doctor, error)
+	UpdateDoctor(inputName CheckNameDoctorInput, inputData UpdateDoctorInput) (Doctor, error)
 	DeleteDoctor(input CheckNameDoctorInput) error
 }
 
@@ -34,6 +35,7 @@ func (s *service) RegisterDoctor(input RegisterDoctorInput) (Doctor, error) {
 		Email:       input.Email,
 		PhoneNumber: input.PhoneNumber,
 		Address:     input.Address,
+		City:        input.City,
 		Speciality:  input.Speciality,
 	}
 
@@ -73,6 +75,21 @@ func (s *service) Login(input LoginDoctorInput) (Doctor, error) {
 	return doctor, nil
 }
 
+func (s *service) IsEmailAvailable(input CheckEmailDoctorInput) (bool, error) {
+	email := input.Email
+
+	doctor, err := s.repository.FindByEmail(email)
+	if err != nil {
+		return false, err
+	}
+
+	if doctor.ID == 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
 func (s *service) SaveAvatar(ID int, fileLocation string) (Doctor, error) {
 	doctor, err := s.repository.FindByID(ID)
 	if err != nil {
@@ -87,6 +104,15 @@ func (s *service) SaveAvatar(ID int, fileLocation string) (Doctor, error) {
 	}
 
 	return updatedDoctor, nil
+}
+
+func (s *service) GetAllDoctors() ([]Doctor, error) {
+	doctors, err := s.repository.FindAll()
+	if err != nil {
+		return []Doctor{}, err
+	}
+
+	return doctors, err
 }
 
 func (s *service) GetDoctorByID(ID int) (Doctor, error) {
@@ -115,29 +141,33 @@ func (s *service) GetDoctorByName(name string) (Doctor, error) {
 	return doctor, nil
 }
 
-func (s *service) GetDoctorByCity(city string) (Doctor, error) {
-	doctor, err := s.repository.FindByCity(city)
+func (s *service) GetDoctorByCity(city string) ([]Doctor, error) {
+	doctors, err := s.repository.FindByCity(city)
 	if err != nil {
-		return Doctor{}, err
+		return []Doctor{}, err
 	}
 
-	if doctor.City == "" {
-		return Doctor{}, errors.New("No doctor found on that city")
-	}
+	// for _, doctor := range doctors {
+	// 	if doctor.City == "" {
+	// 		return []Doctor{}, errors.New("No doctor found on that city")
+	// 	}
+	// }
 
-	return doctor, nil
+	return doctors, nil
 }
-func (s *service) GetDoctorBySpeciality(speciality string) (Doctor, error) {
-	doctor, err := s.repository.FindBySpeciality(speciality)
+func (s *service) GetDoctorBySpeciality(speciality string) ([]Doctor, error) {
+	doctors, err := s.repository.FindBySpeciality(speciality)
 	if err != nil {
-		return Doctor{}, err
+		return []Doctor{}, err
 	}
 
-	if doctor.Speciality == "" {
-		return Doctor{}, errors.New("No doctor found on that speciality")
-	}
+	// for _, doctor := range doctors {
+	// 	if doctor.Speciality == "" {
+	// 		return []Doctor{}, errors.New("No doctor found on that speciality")
+	// 	}
+	// }
 
-	return doctor, nil
+	return doctors, nil
 }
 
 func (s *service) UpdateDoctor(inputName CheckNameDoctorInput, inputData UpdateDoctorInput) (Doctor, error) {
@@ -158,4 +188,18 @@ func (s *service) UpdateDoctor(inputName CheckNameDoctorInput, inputData UpdateD
 	}
 
 	return updatedDoctor, nil
+}
+
+func (s *service) DeleteDoctor(input CheckNameDoctorInput) error {
+	doctor, err := s.repository.FindByName(input.Name)
+	if err != nil {
+		return err
+	}
+
+	err = s.repository.Delete(doctor.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
